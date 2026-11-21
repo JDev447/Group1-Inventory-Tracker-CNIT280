@@ -14,6 +14,82 @@ const status = document.querySelector("#status");
 const storageError = document.querySelector("#storage-error");
 const formError = document.querySelector("#form-error");
 let editingProductId = null;
+const editorDialog = document.querySelector("#editor-dialog");
+const confirmationDialog = document.querySelector("#confirmation-dialog");
+const detailsDialog = document.querySelector("#details-dialog");
+const confirmationError = document.querySelector("#confirmation-error");
+let confirmAction = null;
+const dialogCleanups = new Map();
+
+// Native dialogs keep keyboard focus inside and make the background inactive.
+function openDialog(dialog, focusTarget) {
+  const trigger = document.activeElement;
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  const previousBodyStyle = document.body.getAttribute("style");
+  document.body.style.position = "fixed";
+  document.body.style.top = "-" + scrollY + "px";
+  document.body.style.left = "-" + scrollX + "px";
+  document.body.style.width = "100%";
+  dialog.showModal();
+  focusTarget.focus({ preventScroll: true });
+
+  const restorePage = () => {
+    dialogCleanups.delete(dialog);
+    if (previousBodyStyle === null) document.body.removeAttribute("style");
+    else document.body.setAttribute("style", previousBodyStyle);
+    // Saving rebuilds the table, so find the replacement for the original button.
+    let returnTarget = trigger;
+    if (!trigger.isConnected) {
+      const label = trigger.getAttribute("aria-label");
+      returnTarget = [...inventoryRows.querySelectorAll("button")].find(
+        button => button.getAttribute("aria-label") === label
+      ) ?? addProduct;
+    }
+    returnTarget.focus({ preventScroll: true });
+    window.scrollTo(scrollX, scrollY);
+    dialog.removeEventListener("close", restorePage);
+  };
+  dialogCleanups.set(dialog, restorePage);
+  dialog.addEventListener("close", restorePage, { once: true });
+}
+
+function closeDialog(dialog) {
+  dialog.close();
+  dialogCleanups.get(dialog)?.();
+}
+
+function openConfirmation(title, message, action) {
+  document.querySelector("#confirmation-title").textContent = title;
+  document.querySelector("#confirmation-message").textContent = message;
+  confirmationError.textContent = "";
+  confirmAction = action;
+  openDialog(confirmationDialog, document.querySelector("#confirmation-cancel"));
+}
+
+function openDetails(product) {
+  document.querySelector("#details-title").textContent = product.name;
+  document.querySelector("#details-description").textContent = product.description || "No description provided.";
+  const total = product.variants.reduce((sum, variant) => sum + variant.quantity, 0);
+  document.querySelector("#details-summary").textContent =
+    "Category: " + (product.category || "Uncategorized") + " · Unit price: " +
+    currency.format(product.priceCents / 100) + " · Total stock: " + total;
+  const rows = document.querySelector("#details-variants");
+  rows.replaceChildren();
+  for (const variant of product.variants) {
+    const row = rows.insertRow();
+    for (const value of [variant.sku, variant.size, variant.color, variant.quantity]) {
+      row.insertCell().textContent = value;
+    }
+  }
+  if (!product.variants.length) {
+    const cell = rows.insertRow().insertCell();
+    cell.colSpan = 4;
+    cell.textContent = "No variants recorded.";
+  }
+  openDialog(detailsDialog, document.querySelector("#details-title"));
+}
+
 
 function sampleData() {
   return {
@@ -115,6 +191,11 @@ function renderInventory() {
 
       const actions = row.insertCell().appendChild(document.createElement("div"));
       actions.className = "actions";
+      const view = actions.appendChild(document.createElement("button"));
+      view.type = "button";
+      view.textContent = "View";
+      view.setAttribute("aria-label", "View " + product.name);
+      view.addEventListener("click", () => openDetails(product));
       const edit = actions.appendChild(document.createElement("button"));
       edit.type = "button";
       edit.textContent = "Edit";
@@ -181,26 +262,25 @@ function openEditor(product, variantId) {
   } else {
     appendVariant();
   }
-  form.hidden = false;
-  focusField.focus();
-  form.scrollIntoView({ block: "nearest" });
+  openDialog(editorDialog, focusField);
 }
 
 function closeEditor() {
-  form.hidden = true;
-  editingProductId = null;
-  addProduct.focus();
+  closeDialog(editorDialog);
 }
 
 function deleteProduct(product) {
-  if (!window.confirm('Delete "' + product.name + '" and all of its variants?')) return;
-
-  const products = data.products.filter(item => item.id !== product.id);
-  if (!saveData({ ...data, products }, storageError)) return;
-  if (editingProductId === product.id) closeEditor();
-  renderInventory();
-  addProduct.focus();
-  status.textContent = product.name + " deleted.";
+  openConfirmation(
+    "Delete product?",
+    'Delete "' + product.name + '"? All associated size/color variants will also be deleted.',
+    () => {
+      const products = data.products.filter(item => item.id !== product.id);
+      if (!saveData({ ...data, products }, confirmationError)) return false;
+      renderInventory();
+      status.textContent = product.name + " deleted.";
+      return true;
+    }
+  );
 }
 
 function readProduct() {
@@ -258,8 +338,8 @@ form.addEventListener("submit", event => {
     ? data.products.map(item => item.id === editingProductId ? product : item)
     : [...data.products, product];
   if (!saveData({ ...data, products }, formError)) return;
-  closeEditor();
   renderInventory();
+  closeEditor();
   status.textContent = product.name + " saved.";
 });
 
@@ -282,13 +362,27 @@ document.querySelector("#clear-filters").addEventListener("click", () => {
   renderInventory();
 });
 document.querySelector("#reset-demo").addEventListener("click", () => {
-  if (!window.confirm("Reset to the original demo data? This will discard your changes.")) return;
-  if (!saveData(sampleData(), storageError)) return;
-  addProduct.disabled = false;
-  closeEditor();
-  clearFilters();
-  renderInventory();
-  status.textContent = "Original demo inventory restored.";
+  openConfirmation(
+    "Reset demo data?",
+    "Your current inventory will be replaced with the original sample data. All inventory changes will be discarded.",
+    () => {
+      if (!saveData(sampleData(), confirmationError)) return false;
+      addProduct.disabled = false;
+      clearFilters();
+      renderInventory();
+      status.textContent = "Original demo inventory restored.";
+      return true;
+    }
+  );
+});
+
+document.querySelectorAll("[data-close-dialog]").forEach(button => {
+  button.addEventListener("click", () => closeDialog(button.closest("dialog")));
+});
+editorDialog.addEventListener("close", () => { editingProductId = null; });
+confirmationDialog.addEventListener("close", () => { confirmAction = null; });
+document.querySelector("#confirmation-confirm").addEventListener("click", () => {
+  if (confirmAction && confirmAction()) closeDialog(confirmationDialog);
 });
 
 renderInventory();

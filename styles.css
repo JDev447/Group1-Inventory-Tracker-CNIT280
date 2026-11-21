@@ -5,6 +5,8 @@
   background: #f4f6fa;
 }
 
+/* Keep status and table updates from moving the page after a dialog closes. */
+html { overflow-anchor: none; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 205px minmax(0, 1fr); }
@@ -24,7 +26,7 @@ h3 { font-size: 1rem; margin: 22px 0 8px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
 .page-header p { color: #506079; margin-top: 8px; }
 .panel { background: white; border: 1px solid #dce3ee; border-radius: 9px; }
-.editor { padding: 20px; margin-bottom: 18px; }
+.editor { margin: 0; }
 .filters, .product-fields, .variant { display: grid; gap: 12px; align-items: end; }
 .filters { grid-template-columns: minmax(160px, 2fr) 1fr 1fr auto; padding: 16px; }
 .product-fields { grid-template-columns: 2fr 1fr 1fr; }
@@ -68,4 +70,36 @@ footer { margin-top: 18px; }
   .page-header { align-items: flex-start; flex-direction: column; }
   .filters, .product-fields, .variant { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filters > :first-child, .product-fields > :first-child { grid-column: 1 / -1; }
+}
+
+/* Dialogs use the same borders, colors, and controls as the inventory page. */
+.modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(760px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  overflow-y: auto;
+  border: 1px solid #dce3ee;
+  border-radius: 9px;
+  background: white;
+  color: #162238;
+  box-shadow: 0 12px 48px #101d3633;
+}
+.modal::backdrop { background: #101d3699; }
+.editor-modal { width: min(960px, calc(100% - 32px)); }
+.confirmation-modal { width: min(480px, calc(100% - 32px)); }
+.modal h2 { padding-right: 36px; }
+.modal-x { position: absolute; top: 12px; right: 12px; font-size: 1.25rem; }
+.modal > .actions { margin-top: 20px; }
+#confirmation-message { line-height: 1.6; overflow-wrap: anywhere; }
+.details-description { white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 16px; }
+#details-title { overflow-wrap: anywhere; }
+#details-summary { line-height: 1.6; }
+.danger { background: #ae292b; border-color: #ae292b; color: white; }
+.danger:hover { background: #8b2022; }
+@media (max-width: 680px) {
+  .modal { padding: 20px 16px; }
+  .modal .variant { grid-template-columns: minmax(0, 1fr); }
 }

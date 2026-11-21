@@ -29,7 +29,9 @@
     <p id="status" role="status"></p>
     <p id="storage-error" class="error" role="alert"></p>
 
-    <form id="product-form" class="panel editor" hidden>
+    <dialog id="editor-dialog" class="modal editor-modal" aria-labelledby="editor-title">
+    <button type="button" class="modal-x" data-close-dialog aria-label="Close product editor">×</button>
+    <form id="product-form" class="editor">
       <h2 id="editor-title" tabindex="-1">Add product</h2>
       <div class="product-fields">
         <label>Product name <input name="productName" required maxlength="100"></label>
@@ -47,6 +49,7 @@
         <button id="cancel-edit" type="button">Cancel</button>
       </div>
     </form>
+    </dialog>
 
     <section class="panel" aria-label="Product inventory">
       <div class="filters">
@@ -72,6 +75,31 @@
 
     <footer><button id="reset-demo" type="button">Reset demo data</button></footer>
   </main>
+
+  <dialog id="confirmation-dialog" class="modal confirmation-modal" aria-labelledby="confirmation-title" aria-describedby="confirmation-message">
+    <h2 id="confirmation-title"></h2>
+    <p id="confirmation-message"></p>
+    <p id="confirmation-error" class="error" role="alert"></p>
+    <div class="actions">
+      <button type="button" id="confirmation-cancel" data-close-dialog>Cancel</button>
+      <button type="button" id="confirmation-confirm" class="danger">Confirm</button>
+    </div>
+  </dialog>
+
+  <dialog id="details-dialog" class="modal" aria-labelledby="details-title">
+    <button type="button" class="modal-x" data-close-dialog aria-label="Close product details">×</button>
+    <h2 id="details-title" tabindex="-1"></h2>
+    <p id="details-description" class="details-description"></p>
+    <p id="details-summary"></p>
+    <h3>Size and color variants</h3>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Product variants">
+      <table>
+        <thead><tr><th scope="col">SKU</th><th scope="col">Size</th><th scope="col">Color</th><th scope="col">Quantity</th></tr></thead>
+        <tbody id="details-variants"></tbody>
+      </table>
+    </div>
+    <div class="actions"><button type="button" data-close-dialog>Close</button></div>
+  </dialog>
 
   <template id="variant-template">
     <fieldset class="variant">
