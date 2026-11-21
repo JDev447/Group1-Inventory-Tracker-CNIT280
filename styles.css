@@ -1,0 +1,71 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+  color: #162238;
+  background: #f4f6fa;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 205px minmax(0, 1fr); }
+.sidebar { padding: 26px 16px; background: #101d36; color: #fff; }
+.brand { display: block; padding: 0 10px; color: inherit; text-decoration: none; font-weight: 700; }
+.brand span { display: block; color: #c3cfe1; font-size: .82rem; font-weight: 500; }
+nav { display: grid; gap: 6px; margin-top: 30px; }
+nav > * { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 6px; }
+nav a { background: #245cd1; color: #fff; text-decoration: none; font-weight: 600; }
+nav > span { color: #c3cfe1; }
+nav small { font-size: .7rem; }
+main { width: 100%; max-width: 1360px; padding: 38px clamp(16px, 4vw, 52px); }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(1.55rem, 4vw, 2rem); line-height: 1.2; }
+h2 { font-size: 1.25rem; margin-bottom: 18px; }
+h3 { font-size: 1rem; margin: 22px 0 8px; }
+.page-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
+.page-header p { color: #506079; margin-top: 8px; }
+.panel { background: white; border: 1px solid #dce3ee; border-radius: 9px; }
+.editor { padding: 20px; margin-bottom: 18px; }
+.filters, .product-fields, .variant { display: grid; gap: 12px; align-items: end; }
+.filters { grid-template-columns: minmax(160px, 2fr) 1fr 1fr auto; padding: 16px; }
+.product-fields { grid-template-columns: 2fr 1fr 1fr; }
+.description { grid-column: 1 / -1; }
+.variant { grid-template-columns: 1fr 1fr 1.5fr 1fr auto; margin: 0 0 12px; padding: 12px; min-inline-size: 0; border: 1px solid #dce3ee; border-radius: 6px; }
+legend { padding: 0 4px; color: #506079; font-size: .85rem; }
+label { display: grid; gap: 5px; font-size: .85rem; font-weight: 600; min-width: 0; }
+input, select, textarea, button { font: inherit; border: 1px solid #b9c6d9; border-radius: 6px; }
+input, select, textarea { padding: 8px 10px; min-height: 40px; width: 100%; background: white; color: inherit; }
+textarea { resize: vertical; }
+button { padding: 8px 12px; min-height: 40px; background: white; color: #253958; font-size: .88rem; font-weight: 600; cursor: pointer; }
+button:hover { background: #edf2fb; }
+button:disabled { opacity: .6; cursor: default; }
+.primary { background: #245cd1; border-color: #245cd1; color: white; }
+.primary:hover { background: #194aaf; }
+:focus-visible { outline: 3px solid #4676df; outline-offset: 3px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.editor > .actions { margin-top: 16px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; text-align: left; font-size: .88rem; }
+th, td { padding: 10px 12px; border-block: 1px solid #e1e7f0; }
+th { background: #edf1f8; white-space: nowrap; }
+td:first-child { font-weight: 600; }
+td button { min-height: 34px; padding: 5px 8px; }
+td .actions { flex-wrap: nowrap; }
+.summary { padding: 12px 16px; font-size: .85rem; color: #506079; }
+footer { margin-top: 18px; }
+#status:not(:empty), .error:not(:empty) { margin-bottom: 14px; padding: 10px 12px; border-radius: 6px; }
+#status:not(:empty) { color: #185a40; background: #e5f5ed; }
+.error:not(:empty) { color: #982627; background: #fceeee; }
+#form-error:not(:empty) { margin-top: 14px; }
+
+@media (max-width: 960px) {
+  body { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+  nav { display: flex; flex-wrap: wrap; margin: 0; }
+  nav > * { gap: 6px; }
+}
+@media (max-width: 680px) {
+  main { padding-top: 24px; }
+  .page-header { align-items: flex-start; flex-direction: column; }
+  .filters, .product-fields, .variant { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filters > :first-child, .product-fields > :first-child { grid-column: 1 / -1; }
+}
