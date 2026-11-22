@@ -1,6 +1,5 @@
 "use strict";
 
-const storageKey = "cnit280-clothing-store";
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const form = document.querySelector("#product-form");
 const variantList = document.querySelector("#variants");
@@ -93,6 +92,7 @@ function openDetails(product) {
 
 function sampleData() {
   return {
+    sales: [],
     products: [
       {
         id: "tee", name: "Essential Cotton T-Shirt", category: "Tops",
@@ -126,27 +126,22 @@ function sampleData() {
 
 function loadData() {
   try {
-    const saved = localStorage.getItem(storageKey);
-    if (saved !== null) {
-      const data = JSON.parse(saved);
-      if (!Array.isArray(data?.products)) throw new Error("Invalid inventory");
-      return data;
-    }
+    return readStoredData();
   } catch {
     storageError.textContent = "Saved inventory could not be opened. Reset demo data to start fresh.";
     addProduct.disabled = true;
-    return { products: [] };
+    return { products: [], sales: [] };
   }
-  return sampleData();
 }
 
 let data = loadData();
 
-function saveData(nextData, errorElement) {
+function saveData(nextData, errorElement, reset = false) {
   try {
-    localStorage.setItem(storageKey, JSON.stringify(nextData));
-  } catch {
-    errorElement.textContent = "Changes could not be saved. Check that browser storage is available and try again.";
+    if (reset) resetStoredData(nextData);
+    else persistData(nextData, data);
+  } catch (error) {
+    errorElement.textContent = "Changes could not be saved. " + error.message;
     return false;
   }
   data = nextData;
@@ -364,13 +359,14 @@ document.querySelector("#clear-filters").addEventListener("click", () => {
 document.querySelector("#reset-demo").addEventListener("click", () => {
   openConfirmation(
     "Reset demo data?",
-    "Your current inventory will be replaced with the original sample data. All inventory changes will be discarded.",
+    "Your current inventory will be replaced with the original sample data and sales history will be cleared. All demo changes will be discarded.",
     () => {
-      if (!saveData(sampleData(), confirmationError)) return false;
+      if (!saveData(sampleData(), confirmationError, true)) return false;
       addProduct.disabled = false;
       clearFilters();
       renderInventory();
-      status.textContent = "Original demo inventory restored.";
+      renderSales();
+      status.textContent = "Original demo inventory restored and sales history cleared.";
       return true;
     }
   );

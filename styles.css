@@ -15,7 +15,8 @@ body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 205px
 .brand span { display: block; color: #c3cfe1; font-size: .82rem; font-weight: 500; }
 nav { display: grid; gap: 6px; margin-top: 30px; }
 nav > * { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 6px; }
-nav a { background: #245cd1; color: #fff; text-decoration: none; font-weight: 600; }
+nav a { color: #c3cfe1; text-decoration: none; font-weight: 600; }
+nav a[aria-current="page"] { background: #245cd1; color: #fff; }
 nav > span { color: #c3cfe1; }
 nav small { font-size: .7rem; }
 main { width: 100%; max-width: 1360px; padding: 38px clamp(16px, 4vw, 52px); }
@@ -103,3 +104,8 @@ footer { margin-top: 18px; }
   .modal { padding: 20px 16px; }
   .modal .variant { grid-template-columns: minmax(0, 1fr); }
 }
+
+.prototype-note { color: #506079; line-height: 1.6; margin-bottom: 18px; }
+.transaction-info { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; margin-bottom: 18px; }
+#sales-rows td:first-child { font-family: monospace; overflow-wrap: anywhere; min-width: 150px; max-width: 210px; }
+#sales-status:not(:empty) { padding: 10px 12px; margin-bottom: 14px; border-radius: 6px; color: #185a40; background: #e5f5ed; }

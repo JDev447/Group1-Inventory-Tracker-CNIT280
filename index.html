@@ -5,14 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Clothing Store Management System</title>
   <link rel="stylesheet" href="./styles.css">
+  <script src="./data.js" defer></script>
+  <script src="./sales-processing.js" defer></script>
+  <script src="./pos-simulator.js" defer></script>
   <script src="./inventory.js" defer></script>
+  <script src="./sales.js" defer></script>
 </head>
 <body>
   <aside class="sidebar">
     <a class="brand" href="./">Clothing Store <span>Management System</span></a>
     <nav aria-label="Main navigation">
       <a href="#inventory" aria-current="page">Inventory</a>
-      <span>Sales <small>Upcoming</small></span>
+      <a href="#sales">Sales</a>
       <span>Reports <small>Upcoming</small></span>
     </nav>
   </aside>
@@ -75,6 +79,39 @@
 
     <footer><button id="reset-demo" type="button">Reset demo data</button></footer>
   </main>
+
+  <main id="sales" hidden>
+    <header class="page-header">
+      <div><h1 tabindex="-1">Sales Activity</h1><p>Review completed transactions and their inventory updates.</p></div>
+      <button type="button" id="simulate-sale" class="primary">Simulate POS Sale</button>
+    </header>
+    <p class="prototype-note">POS transaction receiving is a proposed design refinement pending customer/instructor approval. Simulated sales are demo data and reduce demo inventory.</p>
+    <p id="sales-status" role="status"></p>
+    <p id="sales-error" class="error" role="alert"></p>
+    <section class="panel" aria-label="Recorded sales">
+      <p id="sales-summary" class="summary" aria-live="polite"></p>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Sales activity table">
+        <table>
+          <thead><tr><th scope="col">Transaction ID</th><th scope="col">Date and time</th><th scope="col">Product</th><th scope="col">Size</th><th scope="col">Color</th><th scope="col">Quantity sold</th><th scope="col">Sale total</th><th scope="col">Source</th><th scope="col">Action</th></tr></thead>
+          <tbody id="sales-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="sale-details-dialog" class="modal" aria-labelledby="sale-details-title">
+    <button type="button" class="modal-x" data-close-dialog aria-label="Close transaction details">×</button>
+    <h2 id="sale-details-title" tabindex="-1">Transaction details</h2>
+    <p id="sale-details-info" class="transaction-info"></p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Transaction items">
+      <table>
+        <thead><tr><th scope="col">Product</th><th scope="col">SKU</th><th scope="col">Size</th><th scope="col">Color</th><th scope="col">Quantity</th><th scope="col">Unit price</th><th scope="col">Line total</th></tr></thead>
+        <tbody id="sale-details-items"></tbody>
+      </table>
+    </div>
+    <p id="sale-details-total" class="summary"></p>
+    <div class="actions"><button type="button" data-close-dialog>Close</button></div>
+  </dialog>
 
   <dialog id="confirmation-dialog" class="modal confirmation-modal" aria-labelledby="confirmation-title" aria-describedby="confirmation-message">
     <h2 id="confirmation-title"></h2>
