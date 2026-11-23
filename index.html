@@ -57,7 +57,7 @@
 
     <section class="panel" aria-label="Product inventory">
       <div class="filters">
-        <label>Search inventory <input id="search" type="search" placeholder="Product name or exact SKU"></label>
+        <label>Search inventory <input id="search" type="search" placeholder="Product name or SKU"></label>
         <label>Size <select id="size-filter"><option value="">All sizes</option></select></label>
         <label>Color <select id="color-filter"><option value="">All colors</option></select></label>
         <button id="clear-filters" type="button">Clear filters</button>
@@ -85,7 +85,7 @@
       <div><h1 tabindex="-1">Sales Activity</h1><p>Review completed transactions and their inventory updates.</p></div>
       <button type="button" id="simulate-sale" class="primary">Simulate POS Sale</button>
     </header>
-    <p class="prototype-note">POS transaction receiving is a proposed design refinement pending customer/instructor approval. Simulated sales are demo data and reduce demo inventory.</p>
+    <p class="prototype-note">Simulated sales are demo data and reduce demo inventory.</p>
     <p id="sales-status" role="status"></p>
     <p id="sales-error" class="error" role="alert"></p>
     <section class="panel" aria-label="Recorded sales">
